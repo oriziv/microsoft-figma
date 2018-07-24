@@ -28,7 +28,7 @@ function camelCaseToDash( myStr: string ): string {
   }
 
 function figmaToSass(fileId: string, token: string): void {
-
+    const path: string = "build/";
     const client: Figma.ClientInterface = Figma.Client({
       personalAccessToken: token
     });
@@ -40,7 +40,7 @@ function figmaToSass(fileId: string, token: string): void {
         const colorsKeys: string[] = Object.keys(colors);
         colorsKeys.forEach(c => {
           const value: string = `${c}:${colors[c]};\n`;
-          fs.appendFile(`_colors.scss`, value , (err: any) => {
+          fs.appendFile(path + `_colors.scss`, value , (err: any) => {
             if (err) { throw err; }
           });
         });
@@ -49,13 +49,13 @@ function figmaToSass(fileId: string, token: string): void {
         const textStylesKeys: string[] = Object.keys(textStyles);
         textStylesKeys.forEach(key => {
           const value: string = `@mixin ${key.replace(/^\$/g, "")} {\n`;
-          fs.appendFileSync(`_typo.scss`, value);
+          fs.appendFileSync(path + `_typo.scss`, value);
           const cssRules: string[] = Object.keys(textStyles[key]);
           cssRules.forEach((r, i)=> {
             let val: string = `\t${camelCaseToDash(r)}: ${textStyles[key][r]};\n`;
-            fs.appendFileSync(`_typo.scss`, val);
+            fs.appendFileSync(path + `_typo.scss`, val);
           });
-          fs.appendFileSync(`_typo.scss`, "}\n");
+          fs.appendFileSync(path + `_typo.scss`, "}\n");
         });
     });
   }
