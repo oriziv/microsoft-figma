@@ -5,13 +5,6 @@
 ### Install NPM dependencies
 ```npm install```
 
-### Put your staff
-inside figma.ts put your presonal figma api token and figma file
-
-### Compile
-
-```tsc figma.ts```
-
 ### Run
 
-```node figma.js```
+```gulp figma --token=2468-... --fileId=Xgmg...```
