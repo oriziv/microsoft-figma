@@ -1,6 +1,6 @@
 # Figma styles to SASS file
 
-## Create your Figma personal token and put it inside .env
+## Convert figma file to scss variables 
 
 ### Install NPM dependencies
 ```npm install```
