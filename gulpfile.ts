@@ -38,6 +38,11 @@ function figmaToSass(fileId: string, token: string): void {
         // create colors
         const colors: any = sass.colors;
         const colorsKeys: string[] = Object.keys(colors);
+
+        // clear files
+        fs.writeFileSync(path + `_colors.scss`, "");
+        fs.writeFileSync(path + `_typo.scss`, "");
+        
         colorsKeys.forEach(c => {
           const value: string = `${c}:${colors[c]};\n`;
           fs.appendFile(path + `_colors.scss`, value , (err: any) => {
@@ -52,7 +57,20 @@ function figmaToSass(fileId: string, token: string): void {
           fs.appendFileSync(path + `_typo.scss`, value);
           const cssRules: string[] = Object.keys(textStyles[key]);
           cssRules.forEach((r, i)=> {
-            let val: string = `\t${camelCaseToDash(r)}: ${textStyles[key][r]};\n`;
+            let prop: any = camelCaseToDash(r);
+            let value: any = textStyles[key][r];
+
+            // if px props add px
+            if(["fontSize", "lineHeight"].indexOf(r) !== -1) {
+              value = `${value}px`;
+            }
+
+            // if font family
+            if(["fontFamily"].indexOf(r) !== -1) {
+              value = `\"${value}\"`;
+            }
+
+            let val: string = `\t${prop}: ${value};\n`;
             fs.appendFileSync(path + `_typo.scss`, val);
           });
           fs.appendFileSync(path + `_typo.scss`, "}\n");
