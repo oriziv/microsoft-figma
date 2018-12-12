@@ -44,7 +44,7 @@ function figmaToSass(fileId: string, token: string): void {
         fs.writeFileSync(path + `_typo.scss`, "");
         
         colorsKeys.forEach(c => {
-          const value: string = `${c}:${colors[c]};\n`;
+          const value: string = `${c.replace(/\./g, '-')}:${colors[c]};\n`;
           fs.appendFile(path + `_colors.scss`, value , (err: any) => {
             if (err) { throw err; }
           });
