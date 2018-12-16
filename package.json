@@ -11,7 +11,7 @@
   "dependencies": {
     "@types/gulp": "^4.0.5",
     "figma-js": "^1.4.0",
-    "figma-theme": "^1.0.0-3",
+    "@oriziv/figma-theme": "^1.0.0-3",
     "gulp": "^3.9.1",
     "gulp-util": "^3.0.8",
     "ts-node": "^7.0.0",
