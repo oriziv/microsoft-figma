@@ -1,10 +1,12 @@
 import * as Figma from "figma-js";
-import theme =  require("figma-theme");
+import * as theme from "@oriziv/figma-theme";
 import * as fs from "fs" ;
 import * as gulp from "gulp";
 import * as yrags from "yargs";
 import * as gutil from "gulp-util";
 const argv: any = yrags.argv;
+const colorsFilename = '_colors.scss';
+const typoFilename = '_typo.scss';
 
 gulp.task("figma", () => {
     if(!argv.fileId) {
@@ -40,12 +42,15 @@ function figmaToSass(fileId: string, token: string): void {
         const colorsKeys: string[] = Object.keys(colors);
 
         // clear files
-        fs.writeFileSync(path + `_colors.scss`, "");
-        fs.writeFileSync(path + `_typo.scss`, "");
+        gutil.log(gutil.colors.green(`Created ${colorsFilename}`));
+        fs.writeFileSync(path + `${colorsFilename}`, "");
+        
+        gutil.log(gutil.colors.green(`Created ${typoFilename}`));
+        fs.writeFileSync(path + `${typoFilename}`, "");
         
         colorsKeys.forEach(c => {
           const value: string = `${c.replace(/\./g, '-')}:${colors[c]};\n`;
-          fs.appendFile(path + `_colors.scss`, value , (err: any) => {
+          fs.appendFile(path + `${colorsFilename}`, value , (err: any) => {
             if (err) { throw err; }
           });
         });
@@ -54,7 +59,7 @@ function figmaToSass(fileId: string, token: string): void {
         const textStylesKeys: string[] = Object.keys(textStyles);
         textStylesKeys.forEach(key => {
           const value: string = `@mixin ${key.replace(/^\$/g, "")} {\n`;
-          fs.appendFileSync(path + `_typo.scss`, value);
+          fs.appendFileSync(path + `${typoFilename}`, value);
           const cssRules: string[] = Object.keys(textStyles[key]);
           cssRules.forEach((r, i)=> {
             let prop: any = camelCaseToDash(r);
@@ -71,9 +76,9 @@ function figmaToSass(fileId: string, token: string): void {
             }
 
             let val: string = `\t${prop}: ${value};\n`;
-            fs.appendFileSync(path + `_typo.scss`, val);
+            fs.appendFileSync(path + `${typoFilename}`, val);
           });
-          fs.appendFileSync(path + `_typo.scss`, "}\n");
+          fs.appendFileSync(path + `${typoFilename}`, "}\n");
         });
     });
   }
