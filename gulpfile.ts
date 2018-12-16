@@ -36,7 +36,9 @@ function figmaToSass(fileId: string, token: string): void {
     });
 
     client.file(fileId).then( file => {
-        const sass: any = theme(file.data);
+        const sass: any = theme(file.data, {
+          px: true
+        });
         // create colors
         const colors: any = sass.colors;
         const colorsKeys: string[] = Object.keys(colors);
