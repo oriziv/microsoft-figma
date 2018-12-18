@@ -1,5 +1,5 @@
 import * as Figma from 'figma-api';
-import { log, error, getColorValue, formatToCSS, camelCaseToDash, getVariablePrefix, getMixinPrefix } from "../utils";
+import { log, error, getColorValue, formatToCSS, camelCaseToDash, getVariablePrefix, getMixinPrefix, formatVariable } from "../utils";
 import * as yrags from "yargs";
 import * as fs from "fs" ;
 import { IOutputStyle, OutputFormat } from './interfaces';
@@ -141,7 +141,8 @@ function createStyleMixins(vars: IOutputStyle, fileNamePath: string, fileFormat:
 function createColorsVariables(vars: IOutputStyle, fileNamePath: string, fileFormat:OutputFormat = 'scss') {
     let varsKeys = Object.keys(vars.fills);
     varsKeys.forEach(varsKey => {
-        const value: string = `${varsKey.replace(/\$/g,getVariablePrefix(fileFormat)).replace(/\./g, '-')}:${vars.fills[varsKey]};\n`;
+        const variable = formatVariable(varsKey, fileFormat);
+        const value: string = `${variable}:${vars.fills[varsKey]};\n`;
         fs.appendFile(fileNamePath, value , (err: any) => {
             if (err) { throw err; }
         });

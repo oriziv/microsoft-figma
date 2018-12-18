@@ -66,3 +66,10 @@ export function getVariablePrefix(fileFormat: OutputFormat) {
 export function getMixinPrefix(fileFormat: OutputFormat, mixinName: string) {
     return fileFormat === 'scss' ? `@mixin ${mixinName}` : `.${mixinName}()`;
 }
+
+export function formatVariable(variable: string, output: OutputFormat) {
+    let res = variable.replace(/[\$\@]/g,'');
+    res = res.replace(/[\.\s]/g, '-');
+    const prefix = getVariablePrefix(output);
+    return prefix + res;
+}
