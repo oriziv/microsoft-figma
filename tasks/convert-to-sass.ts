@@ -1,8 +1,8 @@
 import * as Figma from 'figma-api';
-import { log, error } from "../utils";
+import { log, error, getColorValue, formatToCSS, camelCaseToDash } from "../utils";
 import * as yrags from "yargs";
 import * as fs from "fs" ;
-import { ISassVariables } from './interfaces';
+import { IFillsOutput, IOutputStyle, ITextStyleOutput } from './interfaces';
 const argv: any = yrags.argv;
 
 export async function convertToSass(): Promise<any> {
@@ -19,64 +19,42 @@ export async function convertToSass(): Promise<any> {
         personalAccessToken: token,
     });
     
-    log('Getting figma file');
     
     try {
+        log(`Getting figma file ${fileId} from figma api`);
         const [ err, file ] = await api.getFile(argv.fileId);
         if (file) {
-            const vars: ISassVariables = {};
+            log(`Got file`);
+            const vars: IOutputStyle = {fills: {},textStyles: {}};
             const styles = file.styles;
             walkFigmaTree(file.document, vars, styles);
 
             // Create colors file
             const path: string = "dist/";
             const colorsFilename = argv.colorFilename || '_colors.scss';
+            const typoFilename = argv.colorFilename || '_typo.scss';
             fs.writeFileSync(path + 'file.json', JSON.stringify(file));
             fs.writeFileSync(path + `${colorsFilename}`, "");
+            fs.writeFileSync(path + `${typoFilename}`, "");
             
-            // Add colors to file
-            const varsKeys = Object.keys(vars);
-            varsKeys.forEach(varsKey => {
-                if(vars[varsKey].type === 'fill') {
-                    const value: string = `${varsKey.replace(/\./g, '-')}:${vars[varsKey].value};\n`;
-                    fs.appendFile(path + `${colorsFilename}`, value , (err: any) => {
-                        if (err) { throw err; }
-                    });
-                }
-            });
+            // Add colors file
+            log(`Creating ${colorsFilename}`);
+            createColorsVariables(vars, `${path}${colorsFilename}`);
+            
+            // Create sass mixins
+            log(`Creating ${typoFilename}`);
+            createStyleMixins(vars,`${path}${typoFilename}`);
+
         }
 
     } catch(e) {
-        throw e;
+        error(e);
     }
 }
 
 
-function getColorValue(color: Figma.Color, format = 'rgba'): string {
-    // Convert color to web rgba format
-    color.r*=255;
-    color.g*=255;
-    color.b*=255;
-    const rgba = `rgba(${color.r},${color.g},${color.b},${color.a})`;
-    return format === 'hex' ? rgbaToHex(rgba): `rgba(${color.r},${color.g},${color.b},${color.a})`;
-}
-
-function trim (str) {
-    return str.replace(/^\s+|\s+$/gm,'');
-}
-  
-function rgbaToHex (rgba: string) {
-    var parts = rgba.substring(rgba.indexOf("(")).split(","),
-        r = parseInt(trim(parts[0].substring(1)), 10),
-        g = parseInt(trim(parts[1]), 10),
-        b = parseInt(trim(parts[2]), 10),
-        a:any = parseFloat(trim(parts[3].substring(0, parts[3].length - 1))).toFixed(2);
-
-    return ('#' + r.toString(16) + g.toString(16) + b.toString(16) + (a * 255).toString(16).substring(0,2));
-}
-
 // Walk the figma tree recursively and get the styles
-function walkFigmaTree(node: Figma.Node<any>, vars: ISassVariables, styles: any) {
+function walkFigmaTree(node: Figma.Node<any>, vars: IOutputStyle, styles: any) {
     if(!node) {
         return;
     }
@@ -84,6 +62,8 @@ function walkFigmaTree(node: Figma.Node<any>, vars: ISassVariables, styles: any)
     // Check node stuff
     if(node.styles) {
         const fills: Figma.Paint[] = node.fills;
+        const style: Figma.TypeStyle = node.style;
+        
         if(fills && fills.length) {
             // has css properties
             fills.forEach(fill => {
@@ -100,7 +80,15 @@ function walkFigmaTree(node: Figma.Node<any>, vars: ISassVariables, styles: any)
                 styleKeys.forEach((styleType: any) => {
                     const styleRef = styles[node.styles[styleType]];
                     if(styleRef) {
-                        vars[styleRef.name] = { value: rgbaColor, type: styleType };
+                        if(styleType === 'fill') {
+                            vars.fills[styleRef.name] = rgbaColor;
+                        }
+                        if(styleType === 'text') {
+                            if(style) {
+                                const textKey = camelCaseToDash(styleRef.name);
+                                vars.textStyles[textKey] = formatToCSS(style);
+                            }
+                        }
                     }
                 });
             });
@@ -115,5 +103,39 @@ function walkFigmaTree(node: Figma.Node<any>, vars: ISassVariables, styles: any)
     // Travel the tree
     node.children.forEach((childNode: Figma.Node<any>) => {
         return walkFigmaTree(childNode, vars, styles);
+    });
+}
+
+
+
+function createStyleMixins(vars: IOutputStyle, fileNamePath: string) {
+    const textVars = Object.keys(vars.textStyles);
+    textVars.forEach(textKey => {
+        // start mixin
+        const value: string = `@mixin ${textKey.replace(/^\$/g, "")} {\n`;
+        fs.appendFileSync(fileNamePath, value);
+
+        const rules = Object.keys(vars.textStyles[textKey]);
+        rules.forEach(cssRule => {
+            let cssRuleValue = vars.textStyles[textKey][cssRule];
+            if(cssRule === 'font-family') {
+                cssRuleValue = `\"${cssRuleValue}\"`;
+            }
+            const val: string = `\t${cssRule}: ${cssRuleValue};\n`;
+            fs.appendFileSync(fileNamePath, val);
+        });
+
+        // End mixin
+        fs.appendFileSync(fileNamePath, "}\n");
+    });
+}
+
+function createColorsVariables(vars: IOutputStyle, fileNamePath: string) {
+    let varsKeys = Object.keys(vars.fills);
+    varsKeys.forEach(varsKey => {
+        const value: string = `${varsKey.replace(/\./g, '-')}:${vars.fills[varsKey]};\n`;
+        fs.appendFile(fileNamePath, value , (err: any) => {
+            if (err) { throw err; }
+        });
     });
 }

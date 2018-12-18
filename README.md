@@ -7,4 +7,8 @@
 
 ### Run
 
-```gulp figma --token=<FIGMA_PERSONAL_ACCSESS_TOKEN> --fileId=<FIGMA_FILE_ID>```
+```
+gulp figma-to-sass --token=<FIGMA_PERSONAL_ACCSESS_TOKEN> --fileId=<FIGMA_FILE_ID>
+[--colorFormat=hex/rgba]
+[--colorFilename=_color.scss]
+```
