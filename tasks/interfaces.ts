@@ -12,3 +12,5 @@ export interface IFillsOutput {
 export interface ITextStyleOutput {
     [key: string]: {};
 }
+
+export type OutputFormat = 'scss' | 'less';

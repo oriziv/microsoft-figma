@@ -1,5 +1,6 @@
 import * as gutil from 'gulp-util';
 import * as Figma from 'figma-api';
+import { OutputFormat } from './tasks/interfaces';
 
 export function log(str: string) {
     return gutil.log(gutil.colors.green(str));
@@ -57,4 +58,11 @@ export function formatToCSS(style: Figma.TypeStyle) {
 
 export function camelCaseToDash( myStr ) {
     return myStr.replace( /([a-z])([A-Z])/g, '$1-$2' ).toLowerCase();
+}
+
+export function getVariablePrefix(fileFormat: OutputFormat) {
+    return fileFormat === 'scss' ? '$' : '@';
+}
+export function getMixinPrefix(fileFormat: OutputFormat, mixinName: string) {
+    return fileFormat === 'scss' ? `@mixin ${mixinName}` : `.${mixinName}()`;
 }

@@ -1,17 +1,18 @@
 import * as Figma from 'figma-api';
-import { log, error, getColorValue, formatToCSS, camelCaseToDash } from "../utils";
+import { log, error, getColorValue, formatToCSS, camelCaseToDash, getVariablePrefix, getMixinPrefix } from "../utils";
 import * as yrags from "yargs";
 import * as fs from "fs" ;
-import { IFillsOutput, IOutputStyle, ITextStyleOutput } from './interfaces';
+import { IOutputStyle, OutputFormat } from './interfaces';
 const argv: any = yrags.argv;
 
-export async function convertToSass(): Promise<any> {
+export async function extractFigmaStyles(): Promise<any> {
     const token = argv.token;
     const fileId = argv.fileId;
 
     // Input check
     if(!token || !fileId) {
         error('Please provide fileId and personal access token');
+        return;
         
     }
     // Create API instance
@@ -31,19 +32,25 @@ export async function convertToSass(): Promise<any> {
 
             // Create colors file
             const path: string = "dist/";
-            const colorsFilename = argv.colorFilename || '_colors.scss';
-            const typoFilename = argv.colorFilename || '_typo.scss';
+            const fileFormat = argv.output || 'scss';
+            const colorsFilename = argv.colorFilename ? `${argv.colorFilename}.${fileFormat}` : `_colors.${fileFormat}`;
+            const typoFilename = argv.typoFilename ? `${argv.typoFilename}.${fileFormat}` : `_typo.${fileFormat}`;
+            
+            // Create files
+            if (!fs.existsSync(path)){
+                fs.mkdirSync(path);
+            }
             fs.writeFileSync(path + 'file.json', JSON.stringify(file));
             fs.writeFileSync(path + `${colorsFilename}`, "");
             fs.writeFileSync(path + `${typoFilename}`, "");
             
-            // Add colors file
+            // Fullfil colors file
             log(`Creating ${colorsFilename}`);
-            createColorsVariables(vars, `${path}${colorsFilename}`);
+            createColorsVariables(vars, `${path}${colorsFilename}`, argv.output);
             
-            // Create sass mixins
+            // Fullfil text styles sass mixins
             log(`Creating ${typoFilename}`);
-            createStyleMixins(vars,`${path}${typoFilename}`);
+            createStyleMixins(vars,`${path}${typoFilename}`, argv.output);
 
         }
 
@@ -108,11 +115,12 @@ function walkFigmaTree(node: Figma.Node<any>, vars: IOutputStyle, styles: any) {
 
 
 
-function createStyleMixins(vars: IOutputStyle, fileNamePath: string) {
+function createStyleMixins(vars: IOutputStyle, fileNamePath: string, fileFormat: OutputFormat = 'scss') {
     const textVars = Object.keys(vars.textStyles);
     textVars.forEach(textKey => {
         // start mixin
-        const value: string = `@mixin ${textKey.replace(/^\$/g, "")} {\n`;
+        const mixinName = textKey.replace(/^\$/g, "");
+        const value: string = `${getMixinPrefix(fileFormat, mixinName)} {\n`;
         fs.appendFileSync(fileNamePath, value);
 
         const rules = Object.keys(vars.textStyles[textKey]);
@@ -130,10 +138,10 @@ function createStyleMixins(vars: IOutputStyle, fileNamePath: string) {
     });
 }
 
-function createColorsVariables(vars: IOutputStyle, fileNamePath: string) {
+function createColorsVariables(vars: IOutputStyle, fileNamePath: string, fileFormat:OutputFormat = 'scss') {
     let varsKeys = Object.keys(vars.fills);
     varsKeys.forEach(varsKey => {
-        const value: string = `${varsKey.replace(/\./g, '-')}:${vars.fills[varsKey]};\n`;
+        const value: string = `${varsKey.replace(/\$/g,getVariablePrefix(fileFormat)).replace(/\./g, '-')}:${vars.fills[varsKey]};\n`;
         fs.appendFile(fileNamePath, value , (err: any) => {
             if (err) { throw err; }
         });
