@@ -7,4 +7,4 @@
 
 ### Run
 
-```gulp figma --token=2468-... --fileId=Xgmg...```
+```gulp figma --token=<FIGMA_PERSONAL_ACCSESS_TOKEN> --fileId=<FIGMA_FILE_ID>```
