@@ -70,3 +70,14 @@ default: `scss`
 
 example: `--output=less`
 </details>
+<details>
+<summary>
+--outputDir
+</summary>
+
+output location dir
+
+default: `dist/`
+
+example: `--outputDir=../build/`
+</details>

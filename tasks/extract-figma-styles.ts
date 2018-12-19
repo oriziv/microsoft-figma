@@ -31,7 +31,7 @@ export async function extractFigmaStyles(): Promise<any> {
             walkFigmaTree(file.document, vars, styles);
 
             // Create colors file
-            const path: string = "dist/";
+            const path: string = argv.outputDir || "dist/";
             const fileFormat = argv.output || 'scss';
             const colorsFilename = argv.colorFilename ? `${argv.colorFilename}.${fileFormat}` : `_colors.${fileFormat}`;
             const typoFilename = argv.typoFilename ? `${argv.typoFilename}.${fileFormat}` : `_typo.${fileFormat}`;
