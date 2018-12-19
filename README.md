@@ -2,6 +2,11 @@
 
 ## Extract figma styles into scss/less files. 
 
+![Project image](logo.png)
+
+### Prerequisites
+You need to install [Node JS](https://nodejs.org/en/download/) if you dont have it already installed
+
 ### 1. Install NPM dependencies
 ```npm install```
 
