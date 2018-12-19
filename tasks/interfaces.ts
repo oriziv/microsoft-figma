@@ -1,5 +1,3 @@
-import * as Figma from 'figma-api';
-
 export interface IOutputStyle {
     fills: IFillsOutput;
     textStyles: ITextStyleOutput;
