@@ -15,8 +15,8 @@ export function getColorValue(color: Figma.Color, format = 'rgba'): string {
     color.r*=255;
     color.g*=255;
     color.b*=255;
-    const rgba = `rgba(${color.r},${color.g},${color.b},${color.a})`;
-    return format === 'hex' ? rgbaToHex(rgba): `rgba(${color.r},${color.g},${color.b},${color.a})`;
+    const rgba = `rgba(${Math.round(color.r)},${Math.round(color.g)},${Math.round(color.b)},${color.a})`;
+    return format === 'hex' ? rgbaToHex(rgba): rgba;
 }
 
 function trim (str) {
