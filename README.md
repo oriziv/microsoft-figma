@@ -1,4 +1,6 @@
 # Figma styles to SASS/LESS files
+# THIS IS NO LONGET MAINTAINED AND MOVED HERE https://github.com/oriziv/figma-sass-less-plugin AS FIGMA PLUGIN
+CAN BE FOUND [HERE](https://www.figma.com/community/plugin/742750636238601912/CSSGen) 
 
 ## Extract figma styles into scss/less files. 
 
