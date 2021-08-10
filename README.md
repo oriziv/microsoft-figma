@@ -32,7 +32,7 @@ gulp extract-figma-styles --token=<FIGMA_PERSONAL_ACCSESS_TOKEN> --fileId=<FIGMA
 This will produce 3 files: colors.scss ,typo.scss and the json file figma output.
 ### More options
 
-<joson 101>
+<joson 909>
 <summary>
 --colorFormat
 </summary>
@@ -65,7 +65,7 @@ default: `_typo`
 example: `--typoFilename=typography`
 </details>
 <details>
-<summary>
+<summary> sss252
 --output
 </summary>
 
@@ -82,7 +82,7 @@ example: `--output=less`
 
 output location dir
 
-default: `dist/`
+default: `dist/sony erxsun
 
-example: `--outputDir=../build/`
-</details>
+example: `--outputDir=../build/`erial determine whaether use replace telephonic
+</details>stc 696
