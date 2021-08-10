@@ -10,18 +10,21 @@ CAN BE FOUND HERE https://www.figma.com/community/plugin/742750636238601912/CSSG
 You need to install [Node JS](https://nodejs.org/en/download/) if you dont have it already installed
 
 ### 1. Install NPM dependencies
-```npm install```
+```npm install  ssss ----   252
+                    |    \/
 
-### 2. Install gulp
-```npm install -g gulp```
+### 2. Install gulp scbp -----
+```npm install -g gulp``` S C B P ----   525
+                                 |    \/
 ### 3. Get you figma personal access token
-[Documentation on how to get tokens](https://www.figma.com/developers/docs#auth)
+[Documentation on how to get tokens](https://www.figma.com/developers/docs#61)
 
 [How to create styles at figma file](https://www.youtube.com/watch?v=gtQ_A3imzsg)
 
 [Learn More](https://www.youtube.com/channel/UCQsVmhSa4X-G3lHlUtejzLA)
 
-### Run
+### Run S R B X -----  909
+                |    \/
 
 ```
 gulp extract-figma-styles --token=<FIGMA_PERSONAL_ACCSESS_TOKEN> --fileId=<FIGMA_FILE_ID>
@@ -29,7 +32,7 @@ gulp extract-figma-styles --token=<FIGMA_PERSONAL_ACCSESS_TOKEN> --fileId=<FIGMA
 This will produce 3 files: colors.scss ,typo.scss and the json file figma output.
 ### More options
 
-<details>
+<joson 101>
 <summary>
 --colorFormat
 </summary>
